@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GTM & GA4 Demo — Home</title>
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-P2M48CQ2');</script>
+  <!-- End Google Tag Manager -->
+
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;padding:0 16px 40px;line-height:1.6}
+    header{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:16px 0;border-bottom:1px solid #eee}
+    nav a{margin-right:12px;text-decoration:none}
+    .btn{padding:10px 14px;border:1px solid #ddd;border-radius:10px;cursor:pointer}
+    .card{border:1px solid #eee;border-radius:14px;padding:16px;margin:16px 0}
+    footer{margin-top:40px;font-size:14px;color:#666}
+    code{background:#f6f6f6;padding:2px 6px;border-radius:6px}
+  </style>
+</head>
+<body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P2M48CQ2"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <header>
+    <strong>GTM & GA4 Demo</strong>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="thank-you.html">Thank You</a>
+      <a href="https://www.example.com" target="_blank" rel="noopener">Outbound Link</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Home</h1>
+    <p>Use this site to test GTM triggers, GA4 events, clicks, forms, and e-commerce style events.</p>
+
+    <div class="card">
+      <h2>Test Button</h2>
+      <p>Click this to fire a custom event via <code>dataLayer.push()</code>.</p>
+      <button id="testButton" class="btn">Click Me!</button>
+    </div>
+
+    <div class="card">
+      <h2>Test Form</h2>
+      <p>Submitting will push a custom event and then redirect to the Thank You page.</p>
+      <form id="contactForm">
+        <label>Name <input name="name" required /></label>
+        <button type="submit" class="btn">Submit</button>
+      </form>
+    </div>
+  </main>
+
+  <footer>Built for GTM/GA4 practice.</footer>
+
+  <script>
+    // Button click → custom event
+    document.getElementById('testButton').addEventListener('click', function(){
+      window.dataLayer = window.dataLayer || [];
+      dataLayer.push({
+        event: 'demo_button_click',
+        button_text: this.textContent,
+        page: 'home'
+      });
+      alert('Event pushed: demo_button_click');
+    });
+
+    // Form submit → custom event then redirect
+    document.getElementById('contactForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      window.dataLayer = window.dataLayer || [];
+      dataLayer.push({
+        event: 'contact_form_submit',
+        form_name: 'contactForm',
+        page: 'home'
+      });
+      // small delay to ensure the push reaches GTM, then redirect
+      setTimeout(function(){ window.location.href = 'thank-you.html'; }, 300);
+    });
+
+    // Outbound link detection → custom event (for any external link)
+    document.querySelectorAll('a[href^="http"]').forEach(function(a){
+      if (!a.href.includes(location.hostname)) {
+        a.addEventListener('click', function(){
+          window.dataLayer = window.dataLayer || [];
+          dataLayer.push({
+            event: 'outbound_link_click',
+            url: a.href,
+            page: 'home'
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html>
