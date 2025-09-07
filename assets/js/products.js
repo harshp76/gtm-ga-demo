@@ -148,11 +148,13 @@ function loadRelatedProducts() {
     const relatedGrid = document.getElementById('relatedProducts');
     const productId = getUrlParameter('id');
     
-    if (!relatedGrid || !productId) return;
+    if (!relatedGrid || !productId) {
+        console.log('Related products container not found or no product ID');
+        return;
+    }
 
-    // Wait for products to load
     if (products.length === 0) {
-        setTimeout(loadRelatedProducts, 100);
+        console.log('Products not loaded yet for related products');
         return;
     }
 
@@ -178,6 +180,7 @@ function loadRelatedProducts() {
     relatedProducts = relatedProducts.slice(0, 3);
 
     relatedGrid.innerHTML = relatedProducts.map(product => createProductCard(product)).join('');
+    console.log(`${relatedProducts.length} related products loaded`);
 }
 
 // Product search functionality
