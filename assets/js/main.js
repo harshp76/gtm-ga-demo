@@ -587,7 +587,8 @@ function formatPrice(price) {
 }
 
 function getProductById(id) {
-    return products.find(product => product.id === parseInt(id));
+    const productsToUse = window.products || products || [];
+    return productsToUse.find(product => product.id === parseInt(id));
 }
 
 // URL Parameter Helper
