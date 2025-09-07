@@ -10,4 +10,107 @@
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gt
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+    <!-- End Google Tag Manager -->
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">ShopDemo</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="cart.html" class="cart-icon">
+                    Cart 🛒 <span class="cart-count" id="cartCount">0</span>
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Thank You Page Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="thank-you-container">
+                <div class="thank-you-content">
+                    <div class="success-icon">✓</div>
+                    <h1>Thank You for Your Order!</h1>
+                    <p class="order-confirmation">Your order has been placed successfully.</p>
+                    
+                    <div class="order-details">
+                        <div class="order-info">
+                            <h3>Order Information</h3>
+                            <p><strong>Order ID:</strong> <span id="orderId">Loading...</span></p>
+                            <p><strong>Order Date:</strong> <span id="orderDate"></span></p>
+                            <p><strong>Total Amount:</strong> ₹<span id="orderTotal">0</span></p>
+                        </div>
+                        
+                        <div class="order-items">
+                            <h3>Ordered Items</h3>
+                            <div id="orderedItems">
+                                <!-- Ordered items will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="next-steps">
+                        <h3>What's Next?</h3>
+                        <ul>
+                            <li>📧 You will receive a confirmation email shortly</li>
+                            <li>📱 We'll send you SMS updates about your order status</li>
+                            <li>🚚 Your order will be shipped within 2-3 business days</li>
+                            <li>📦 Track your order using the Order ID above</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a href="index.html" class="btn btn-primary">Continue Shopping</a>
+                        <a href="products.html" class="btn btn-secondary">Browse Products</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter">
+        <div class="container">
+            <h2>Subscribe to Our Newsletter</h2>
+            <p>Get the latest updates on new products and exclusive offers!</p>
+            <form class="newsletter-form" id="newsletterForm">
+                <input type="email" placeholder="Enter your email" required id="newsletterEmail">
+                <button type="submit" class="btn">Subscribe</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- JavaScript Files -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/products.js"></script>
+    <script src="assets/js/gtm-events.js"></script>
+    <script>
+        // Initialize thank you page
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCount();
+            displayOrderConfirmation();
+            
+            // Fire GTM purchase event
+            firePurchaseEvent();
+            
+            // Newsletter form
+            document.getElementById('newsletterForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('newsletterEmail').value;
+                alert(`Thank you for subscribing with email: ${email}`);
+                document.getElementById('newsletterEmail').value = '';
+            });
+        });
+    </script>
+</body>
+</html>
