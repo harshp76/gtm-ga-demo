@@ -6,82 +6,230 @@ let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let products = [];
 const SHIPPING_COST = 99;
 
+// Default products (embedded to avoid CORS issues)
+const defaultProducts = [
+    {
+        id: 1,
+        name: "Wireless Headphones",
+        price: 2999,
+        description: "High-quality wireless headphones with noise cancellation feature. Perfect for music lovers and professionals who demand crystal clear audio quality.",
+        image: "Wireless Headphones Image",
+        category: "Electronics",
+        inStock: true,
+        sku: "WH001",
+        rating: 4.5,
+        reviews: 128
+    },
+    {
+        id: 2,
+        name: "Smart Watch",
+        price: 8999,
+        description: "Feature-rich smartwatch with health monitoring, GPS tracking, and smartphone connectivity. Track your fitness goals and stay connected on the go.",
+        image: "Smart Watch Image",
+        category: "Electronics",
+        inStock: true,
+        sku: "SW002",
+        rating: 4.3,
+        reviews: 89
+    },
+    {
+        id: 3,
+        name: "Laptop Stand",
+        price: 1499,
+        description: "Ergonomic laptop stand for better posture and improved workspace organization. Made from premium aluminum with adjustable height settings.",
+        image: "Laptop Stand Image",
+        category: "Accessories",
+        inStock: true,
+        sku: "LS003",
+        rating: 4.7,
+        reviews: 156
+    },
+    {
+        id: 4,
+        name: "USB-C Hub",
+        price: 2499,
+        description: "Multi-port USB-C hub with fast charging capability and multiple connectivity options. Expand your laptop's connectivity with ease.",
+        image: "USB-C Hub Image",
+        category: "Electronics",
+        inStock: true,
+        sku: "UH004",
+        rating: 4.4,
+        reviews: 73
+    },
+    {
+        id: 5,
+        name: "Bluetooth Speaker",
+        price: 3999,
+        description: "Portable Bluetooth speaker with rich bass and crystal clear sound quality. Waterproof design perfect for outdoor adventures.",
+        image: "Bluetooth Speaker Image",
+        category: "Electronics",
+        inStock: true,
+        sku: "BS005",
+        rating: 4.6,
+        reviews: 204
+    },
+    {
+        id: 6,
+        name: "Phone Case",
+        price: 799,
+        description: "Protective phone case with elegant design and superior drop protection. Available in multiple colors to match your style.",
+        image: "Phone Case Image",
+        category: "Accessories",
+        inStock: true,
+        sku: "PC006",
+        rating: 4.2,
+        reviews: 92
+    },
+    {
+        id: 7,
+        name: "Wireless Mouse",
+        price: 1299,
+        description: "Ergonomic wireless mouse with precision tracking and long battery life. Perfect for work and gaming applications.",
+        image: "Wireless Mouse Image",
+        category: "Electronics",
+        inStock: true,
+        sku: "WM007",
+        rating: 4.3,
+        reviews: 67
+    },
+    {
+        id: 8,
+        name: "Power Bank",
+        price: 1999,
+        description: "High-capacity power bank with fast charging support. Keep your devices powered throughout the day with 20000mAh capacity.",
+        image: "Power Bank Image",
+        category: "Electronics",
+        inStock: true,
+        sku: "PB008",
+        rating: 4.5,
+        reviews: 143
+    },
+    {
+        id: 9,
+        name: "Desk Organizer",
+        price: 899,
+        description: "Wooden desk organizer to keep your workspace tidy and organized. Multiple compartments for pens, papers, and accessories.",
+        image: "Desk Organizer Image",
+        category: "Accessories",
+        inStock: true,
+        sku: "DO009",
+        rating: 4.1,
+        reviews: 45
+    },
+    {
+        id: 10,
+        name: "LED Desk Lamp",
+        price: 2299,
+        description: "Adjustable LED desk lamp with multiple brightness levels and color temperatures. Perfect for reading and working late hours.",
+        image: "LED Desk Lamp Image",
+        category: "Accessories",
+        inStock: true,
+        sku: "DL010",
+        rating: 4.4,
+        reviews: 78
+    },
+    {
+        id: 11,
+        name: "Wireless Earbuds",
+        price: 4999,
+        description: "True wireless earbuds with active noise cancellation and premium sound quality. Comfortable fit for all-day listening.",
+        image: "Wireless Earbuds Image",
+        category: "Electronics",
+        inStock: true,
+        sku: "WE011",
+        rating: 4.7,
+        reviews: 189
+    },
+    {
+        id: 12,
+        name: "Keyboard Cover",
+        price: 599,
+        description: "Silicone keyboard cover to protect your laptop keyboard from dust and spills. Ultra-thin design maintains typing comfort.",
+        image: "Keyboard Cover Image",
+        category: "Accessories",
+        inStock: true,
+        sku: "KC012",
+        rating: 4.0,
+        reviews: 34
+    }
+];
+
 // Initialize application
 document.addEventListener('DOMContentLoaded', function() {
-    loadProducts();
-    updateCartCount();
+    initializeApp();
 });
 
-// Load products from JSON file
-async function loadProducts() {
-    try {
-        const response = await fetch('data/products.json');
-        products = await response.json();
-    } catch (error) {
-        console.error('Error loading products:', error);
-        // Fallback to hardcoded products
-        products = getDefaultProducts();
+// Initialize the application
+async function initializeApp() {
+    await loadProducts();
+    updateCartCount();
+    
+    // Initialize page-specific functionality
+    const currentPage = getCurrentPage();
+    switch(currentPage) {
+        case 'index':
+            loadFeaturedProducts();
+            break;
+        case 'products':
+            loadAllProducts();
+            break;
+        case 'product-details':
+            loadProductDetails();
+            loadRelatedProducts();
+            break;
+        case 'cart':
+            displayCart();
+            fireViewCartEvent();
+            break;
+        case 'checkout':
+            displayCheckoutItems();
+            fireBeginCheckoutEvent();
+            setupFormValidation();
+            break;
+        case 'thank-you':
+            displayOrderConfirmation();
+            break;
     }
 }
 
-// Default products if JSON fails to load
-function getDefaultProducts() {
-    return [
-        {
-            id: 1,
-            name: "Wireless Headphones",
-            price: 2999,
-            description: "High-quality wireless headphones with noise cancellation feature. Perfect for music lovers and professionals.",
-            image: "Wireless Headphones Image",
-            category: "Electronics"
-        },
-        {
-            id: 2,
-            name: "Smart Watch",
-            price: 8999,
-            description: "Feature-rich smartwatch with health monitoring, GPS tracking, and smartphone connectivity.",
-            image: "Smart Watch Image",
-            category: "Electronics"
-        },
-        {
-            id: 3,
-            name: "Laptop Stand",
-            price: 1499,
-            description: "Ergonomic laptop stand for better posture and improved workspace organization.",
-            image: "Laptop Stand Image",
-            category: "Accessories"
-        },
-        {
-            id: 4,
-            name: "USB-C Hub",
-            price: 2499,
-            description: "Multi-port USB-C hub with fast charging capability and multiple connectivity options.",
-            image: "USB-C Hub Image",
-            category: "Electronics"
-        },
-        {
-            id: 5,
-            name: "Bluetooth Speaker",
-            price: 3999,
-            description: "Portable Bluetooth speaker with rich bass and crystal clear sound quality.",
-            image: "Bluetooth Speaker Image",
-            category: "Electronics"
-        },
-        {
-            id: 6,
-            name: "Phone Case",
-            price: 799,
-            description: "Protective phone case with elegant design and superior drop protection.",
-            image: "Phone Case Image",
-            category: "Accessories"
+// Get current page name
+function getCurrentPage() {
+    const path = window.location.pathname;
+    const page = path.split('/').pop().replace('.html', '') || 'index';
+    return page;
+}
+
+// Load products - try JSON first, fallback to embedded data
+async function loadProducts() {
+    try {
+        // Try to load from JSON file first
+        const response = await fetch('./data/products.json');
+        if (response.ok) {
+            products = await response.json();
+            console.log('Products loaded from JSON file');
+        } else {
+            throw new Error('Failed to load JSON');
         }
-    ];
+    } catch (error) {
+        console.log('Using embedded product data');
+        products = defaultProducts;
+    }
+    
+    // Ensure products are loaded
+    if (products.length === 0) {
+        products = defaultProducts;
+    }
+    
+    console.log(`${products.length} products loaded successfully`);
 }
 
 // Cart Operations
 function addToCart(productId, quantity = 1) {
     const product = products.find(p => p.id === productId);
-    if (!product) return;
+    if (!product) {
+        console.error('Product not found:', productId);
+        return;
+    }
 
     const existingItem = cart.find(item => item.id === productId);
     
@@ -102,7 +250,9 @@ function addToCart(productId, quantity = 1) {
     showNotification(`${product.name} added to cart!`);
     
     // Fire GTM add_to_cart event
-    fireAddToCartEvent(product, quantity);
+    if (typeof fireAddToCartEvent === 'function') {
+        fireAddToCartEvent(product, quantity);
+    }
 }
 
 function removeFromCart(productId) {
@@ -115,7 +265,7 @@ function removeFromCart(productId) {
         showNotification(`${removedItem.name} removed from cart`);
         
         // Refresh cart display if on cart page
-        if (window.location.pathname.includes('cart.html')) {
+        if (getCurrentPage() === 'cart') {
             displayCart();
         }
     }
@@ -132,7 +282,7 @@ function updateQuantity(productId, newQuantity) {
             updateCartCount();
             
             // Refresh displays
-            if (window.location.pathname.includes('cart.html')) {
+            if (getCurrentPage() === 'cart') {
                 displayCart();
             }
         }
@@ -153,7 +303,9 @@ function updateCartCount() {
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     const cartCountElements = document.querySelectorAll('#cartCount');
     cartCountElements.forEach(element => {
-        element.textContent = totalItems;
+        if (element) {
+            element.textContent = totalItems;
+        }
     });
 }
 
@@ -292,8 +444,12 @@ function completeOrder() {
     localStorage.setItem('lastOrder', JSON.stringify(orderData));
     
     // Fire GTM events
-    fireAddShippingInfoEvent();
-    fireAddPaymentInfoEvent();
+    if (typeof fireAddShippingInfoEvent === 'function') {
+        fireAddShippingInfoEvent();
+    }
+    if (typeof fireAddPaymentInfoEvent === 'function') {
+        fireAddPaymentInfoEvent();
+    }
     
     // Clear cart and redirect
     clearCart();
@@ -329,9 +485,13 @@ function displayOrderConfirmation() {
     }
     
     // Update order information
-    document.getElementById('orderId').textContent = orderId;
-    document.getElementById('orderDate').textContent = new Date(orderData.date).toLocaleDateString();
-    document.getElementById('orderTotal').textContent = orderData.total.toLocaleString();
+    const orderIdElement = document.getElementById('orderId');
+    const orderDateElement = document.getElementById('orderDate');
+    const orderTotalElement = document.getElementById('orderTotal');
+    
+    if (orderIdElement) orderIdElement.textContent = orderId;
+    if (orderDateElement) orderDateElement.textContent = new Date(orderData.date).toLocaleDateString();
+    if (orderTotalElement) orderTotalElement.textContent = orderData.total.toLocaleString();
     
     // Display ordered items
     const orderedItemsContainer = document.getElementById('orderedItems');
@@ -345,7 +505,36 @@ function displayOrderConfirmation() {
     }
     
     // Fire purchase event
-    firePurchaseEvent(orderData);
+    if (typeof firePurchaseEvent === 'function') {
+        firePurchaseEvent(orderData);
+    }
+}
+
+// Form validation setup
+function setupFormValidation() {
+    // Add shipping info event
+    const shippingInputs = document.querySelectorAll('#shippingForm input');
+    shippingInputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            if (isShippingFormValid()) {
+                if (typeof fireAddShippingInfoEvent === 'function') {
+                    fireAddShippingInfoEvent();
+                }
+            }
+        });
+    });
+
+    // Add payment info event
+    const paymentInputs = document.querySelectorAll('#paymentForm input');
+    paymentInputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            if (isPaymentFormValid()) {
+                if (typeof fireAddPaymentInfoEvent === 'function') {
+                    fireAddPaymentInfoEvent();
+                }
+            }
+        });
+    });
 }
 
 // Utility Functions
@@ -365,6 +554,7 @@ function showNotification(message, type = 'success') {
         z-index: 1000;
         opacity: 0;
         transition: opacity 0.3s;
+        max-width: 300px;
     `;
     
     document.body.appendChild(notification);
