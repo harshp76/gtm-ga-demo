@@ -44,7 +44,7 @@ function fireAddToCartEvent(product, quantity = 1) {
         product: product.name,
         quantity: quantity,
         value: product.price * quantity
-        items: formatItemsForGTM([item])
+        // items: formatItemsForGTM([item])
     });
 }
 
